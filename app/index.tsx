@@ -1,18 +1,18 @@
 // app/index.tsx
 import React, { useEffect, useState, useMemo } from "react";
 import { View, FlatList, ActivityIndicator, StyleSheet } from "react-native";
-import { getProducts, Product } from "../services/api";
+import { getProducts } from "../services/api";
 import ProductCard from "../components/ProductCard";
 import Filter from "../components/Filter";
 import BottomBar from "../components/PaymentBar";
-import { fetchLatestRates, convertCurrency, Currency, Rates } from "../services/currency";
+import { fetchLatestRates, Currency, Rates } from "../services/currency";
+import { useCart } from "../context/CartContext";
+import { calculateFinalPrice } from "../utils/pricing";
 
 export default function ProductListScreen() {
-  const [products, setProducts] = useState<Product[]>([]);
+  const { cart, setCart, products, setProducts } = useCart();
   const [loading, setLoading] = useState(true);
-  const [cart, setCart] = useState<Record<number, number>>({});
   const [category, setCategory] = useState<string>("All");
-
   const [customerType, setCustomerType] = useState("Retail");
   const [currency, setCurrency] = useState<Currency>("USD");
   const [rates, setRates] = useState<Rates>({ EUR: 1, USD: 1.08, GBP: 0.86 });
@@ -35,22 +35,6 @@ export default function ProductListScreen() {
     return Array.from(new Set(products.map((p) => p.category)));
   }, [products]);
 
-  const getDiscount = (type: string) => {
-    switch (type) {
-      case "Crew":
-        return 0.8;
-      case "Happy hour":
-        return 0.7;
-      case "Business invitation":
-      case "Tourist invitation":
-        return 0;
-      default:
-        return 1;
-    }
-  };
-
-  const discount = getDiscount(customerType);
-
   const filteredProducts = useMemo(() => {
     if (category === "All") return products;
     return products.filter((p) => p.category === category);
@@ -62,9 +46,15 @@ export default function ProductListScreen() {
 
   const total = products.reduce((sum, p) => {
     const qty = cart[p.id] || 0;
-    const baseUSD = p.price * discount;
-    const priceConverted = convertCurrency(baseUSD, "USD", currency, rates);
-    return sum + qty * priceConverted;
+    
+    const finalPrice = calculateFinalPrice(
+        p.price,
+        customerType,
+        currency, 
+        rates
+    );
+
+    return sum + qty * finalPrice;
   }, 0);
 
   if (loading) return <ActivityIndicator style={{ marginTop: 40 }} />;
@@ -79,7 +69,13 @@ export default function ProductListScreen() {
         columnWrapperStyle={{ justifyContent: "space-between", marginBottom: 16 }}
         contentContainerStyle={{ paddingBottom: 140 }}
         renderItem={({ item }) => {
-          const convertedPrice = convertCurrency(item.price * discount, "USD", currency, rates);
+          const convertedPrice = calculateFinalPrice(
+            item.price,
+            customerType,
+            currency,
+            rates
+          );
+
           return (
             <View style={styles.gridItem}>
               <ProductCard
