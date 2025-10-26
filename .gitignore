@@ -1,0 +1,65 @@
+# Node
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# Expo / React Native
+.expo/
+.expo-shared/
+dist/
+web-build/
+*.expo
+
+# Metro / caches
+.cache/
+.expo/*
+.expo-web/
+# Buck (a veces usado por RN)
+buck-out/
+
+# Android
+android/.gradle/
+android/app/build/
+android/build/
+android/local.properties
+*.keystore
+*.jks
+*.iml
+
+# iOS
+ios/Pods/
+ios/build/
+ios/DerivedData/
+*.xcworkspace
+*.xcuserdatad
+*.xcuserstate
+*.pbxuser
+*.mode1v3
+*.mode2v3
+xcuserdata/
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# IDEs / editors
+.idea/
+.vscode/*
+!.vscode/extensions.json
+!.vscode/settings.json
+
+# Env / secrets
+.env
+.env.*
+!.env.example
+
+# Tests / coverage
+coverage/
+.junit/
+
+# Logs / temp
+logs/
+tmp/
+temp/
