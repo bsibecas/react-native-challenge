@@ -15,21 +15,16 @@ export default function Filter({ value, categories, onChange }: Props) {
 
   return (
     <View style={styles.wrap}>
-      {/* Pill */}
       <Pressable onPress={() => setOpen(!open)} style={styles.pill}>
         <Text style={styles.pillText}>Filter: {label} ▾</Text>
       </Pressable>
-
-      {/* Dropdown */}
       {open && (
         <>
-          {/* Overlay to close when tapping outside */}
           <Pressable style={StyleSheet.absoluteFill} onPress={() => setOpen(false)} />
-
           <View style={styles.dropdown}>
             {allOptions.map((item) => (
               <Pressable
-                key={item} // ✅ unique key
+                key={item}
                 onPress={() => {
                   onChange(item);
                   setOpen(false);
@@ -57,14 +52,20 @@ export default function Filter({ value, categories, onChange }: Props) {
 }
 
 const styles = StyleSheet.create({
-  wrap: { alignSelf: "flex-start", marginBottom: 10 },
+  wrap: { 
+    alignSelf: "flex-start", 
+    marginBottom: 10 
+},
   pill: {
     backgroundColor: "#e6e6e6",
     paddingHorizontal: 14,
     paddingVertical: 8,
     borderRadius: 999,
   },
-  pillText: { fontWeight: "600", color: "#333" },
+  pillText: { 
+    fontWeight: "600", 
+    color: "#333" 
+},
   dropdown: {
     position: "absolute",
     top: 44,
@@ -80,7 +81,15 @@ const styles = StyleSheet.create({
     elevation: 6,
     zIndex: 999,
   },
-  option: { paddingVertical: 10, paddingHorizontal: 14 },
-  optionText: { fontSize: 15, color: "#333" },
-  optionSelected: { fontWeight: "700" },
+  option: { 
+    paddingVertical: 10, 
+    paddingHorizontal: 14 
+},
+  optionText: { 
+    fontSize: 15, 
+    color: "#333" 
+},
+  optionSelected: { 
+    fontWeight: "700" 
+},
 });

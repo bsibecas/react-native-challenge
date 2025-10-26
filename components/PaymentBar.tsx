@@ -1,6 +1,8 @@
 import React, { useState } from "react";
 import { View, Text, TouchableOpacity, StyleSheet } from "react-native";
 import { convertCurrency, Currency, Rates } from "../services/currency";
+import { useRouter } from "expo-router";
+import { useCart } from "../context/CartContext";
 
 type Props = {
   total: number;
@@ -21,16 +23,30 @@ export default function BottomBar({
 }: Props) {
   const [openType, setOpenType] = useState(false);
   const [openCurrency, setOpenCurrency] = useState(false);
+  const router = useRouter();
+  const { cart } = useCart();
 
   return (
     <View style={styles.container}>
       <View style={styles.row}>
-        <TouchableOpacity style={styles.payButton}>
+       <TouchableOpacity
+          style={styles.payButton}
+          onPress={() =>
+            router.push({
+              pathname: "/payment",
+              params: {
+                rates: JSON.stringify(rates),
+                currency,
+                customerType,
+                cart: JSON.stringify(cart),
+              },
+            })
+          }
+        >
           <Text style={styles.payText}>
             PAY {total.toFixed(2)} {currency}
           </Text>
         </TouchableOpacity>
-
         <TouchableOpacity
           style={styles.typeButton}
           onPress={() => setOpenType((prev) => !prev)}

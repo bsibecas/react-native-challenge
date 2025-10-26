@@ -19,6 +19,11 @@ const CURRENCY_SYMBOL: Record<Currency, string> = {
 
 export default function ProductCard({ product, quantity, currency, onAdd, onRemove }: Props) {
   const symbol = CURRENCY_SYMBOL[currency];
+  
+  const isOutOfStock = product.stock <= quantity;
+  
+  const handleAdd = isOutOfStock ? () => {} : onAdd;
+  
   return (
     <View style={styles.card}>
       <ImageBackground
@@ -32,18 +37,33 @@ export default function ProductCard({ product, quantity, currency, onAdd, onRemo
           <Text style={styles.units}>{quantity} units</Text>
         </View>
         <View style={styles.bottomBar}>
-          <TouchableOpacity onPress={onAdd} style={[styles.btn, styles.plus]}>
+          <TouchableOpacity 
+            onPress={handleAdd} 
+            style={[
+              styles.btn, 
+              styles.plus, 
+              isOutOfStock && styles.btnDisabled 
+            ]}
+            disabled={isOutOfStock}
+          >
             <Text style={styles.btnText}>＋</Text>
           </TouchableOpacity>
+          
           {quantity > 0 && (
             <TouchableOpacity onPress={onRemove} style={[styles.btn, styles.minus]}>
               <Text style={styles.btnText}>−</Text>
             </TouchableOpacity>
           )}
-          <View style={styles.pricePill}>
-            <Text style={styles.priceText}>
-              {product.price.toFixed(2)} {symbol}
-            </Text>
+          <View style={[styles.pricePill, isOutOfStock && styles.noStockPill]}>
+            {isOutOfStock ? (
+              <Text style={styles.noStockText}>
+                No stock
+              </Text>
+            ) : (
+              <Text style={styles.priceText}>
+                {product.price.toFixed(2)} {symbol}
+              </Text>
+            )}
           </View>
         </View>
       </ImageBackground>
@@ -106,9 +126,22 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     alignItems: "center",
   },
-  plus: { backgroundColor: "#2680ff" },
-  minus: { backgroundColor: "#ff4d4f" },
-  btnText: { color: "#fff", fontWeight: "900", fontSize: 18, lineHeight: 18 },
+  plus: { 
+    backgroundColor: "#2680ff" 
+  },
+  minus: { 
+    backgroundColor: "#ff4d4f" 
+  },
+  btnDisabled: {
+    backgroundColor: "#aaa", 
+    opacity: 0.6 
+  },
+  btnText: { 
+    color: "#fff", 
+    fontWeight: "900", 
+    fontSize: 18, 
+    lineHeight: 18 
+  },
   pricePill: {
     paddingHorizontal: 12,
     paddingVertical: 7,
@@ -117,6 +150,14 @@ const styles = StyleSheet.create({
     marginLeft: "auto",
   },
   priceText: {
+    color: "#fff",
+    fontWeight: "700",
+    fontSize: 14,
+  },
+  noStockPill: {
+    backgroundColor: "#ff4d4f",
+  },
+  noStockText: {
     color: "#fff",
     fontWeight: "700",
     fontSize: 14,
